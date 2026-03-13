@@ -25,9 +25,11 @@ const createUser = async (req, res) => {
         favoriteColor: req.body.favoriteColor,
         birthday: req.body.birthday
     };
+
     const response = await mongodb.getDb().db().collection('users').insertOne(user);
-    if(response.modifiedCount > 0) {
-        res.status(201).json(response);
+
+    if (response.acknowledged) {
+        res.status(201).json({ id: response.insertedId });
     } else {
         res.status(500).json(response.error || 'Some error occurred while creating the user.');
     }
@@ -42,7 +44,7 @@ const updateUser = async (req, res) => {
         ipaddress: req.body.ipaddress
     };
     const response = await mongodb.getDb().db().collection('users').replaceOne({ _id: userId }, user);
-    if(response.acknowledged > 0) {
+    if(response.modifiedCount > 0) {
         res.status(201).json(response);
     } else {
         res.status(500).json(response.error || 'Some error occurred while updating the user.');
